@@ -10,6 +10,7 @@ async function onParseRule() {
   const ruleText = document.getElementById("ruleInput").value.trim();
 
   if (!ruleText) {
+    console.log('111')
     alert("请输入排版要求");
     return;
   }
