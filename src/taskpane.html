@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Word 自动排版</title>
+</head>
+<body>
+  <h3>排版要求</h3>
+
+  <textarea
+    id="ruleInput"
+    rows="6"
+    style="width:100%;"
+    placeholder="例如：一级标题三号黑体居中，二级标题三号楷体，正文四号宋体首行缩进两字符">
+  </textarea>
+
+  <button id="parseRule">
+    解析排版规则
+  </button>
+
+  <pre id="output"></pre>
+
+  <script src="taskpane.js"></script>
+</body>
+</html>
