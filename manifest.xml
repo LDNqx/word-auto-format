@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:type="TaskPaneApp">
+
+  <!-- 基本信息 -->
+  <Id>e277a04a-77b0-4dd9-9fc2-c3968ae9b7ce</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Word Auto Format</ProviderName>
+  <DefaultLocale>zh-CN</DefaultLocale>
+
+  <DisplayName DefaultValue="Word 自动格式"/>
+  <Description DefaultValue="基于 AI 的 Word 自动排版工具"/>
+
+  <!-- 只声明 Word -->
+  <Hosts>
+    <Host Name="Document"/>
+  </Hosts>
+
+  <!-- 任务窗格入口 -->
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://你的-HTTPS-域名/taskpane.html"/>
+  </DefaultSettings>
+
+  <!-- 权限 -->
+  <Permissions>ReadWriteDocument</Permissions>
+
+</OfficeApp>
