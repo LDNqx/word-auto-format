@@ -1,11 +1,21 @@
+// 【仅修复1】所有import置顶 (ES6语法规范，原代码分散import是语法隐患，必须修正，无业务改动)
 import { parseStyleRule } from "./api/aiService.js";
+import { getDocumentParagraphs } from "./office/word.js";
+import { classifyParagraphs } from "./api/aiService.js";
 
-Office.onReady(() => {
-  document
-    .getElementById("parseRule")
-    .addEventListener("click", onParseRule);
+// 【核心修复】合并原代码两处重复的 Office.onReady，只执行一次初始化（原重复调用是报错诱因之一）
+// 修复为 Word Online 兼容的 标准写法，不改变你任何事件绑定逻辑、函数调用逻辑
+Office.onReady(async (info) => {
+  // 关键校验：确认当前是Word环境，杜绝Word is not defined 核心报错
+  if (info.host === Office.HostType.Word) {
+    // 原代码逻辑1：给 parseRule 按钮绑定点击事件 (保留你原有的 addEventListener 写法)
+    document.getElementById("parseRule").addEventListener("click", onParseRule);
+    // 原代码逻辑2：给 analyzeBtn 按钮绑定点击事件 (保留你原有的 onclick 赋值写法)
+    document.getElementById("analyzeBtn").onclick = runSemanticAnalysis;
+  }
 });
 
+// 【完全未修改】你原有的 onParseRule 函数，一行代码都没动
 async function onParseRule() {
   const ruleText = document.getElementById("ruleInput").value.trim();
 
@@ -25,9 +35,7 @@ async function onParseRule() {
   }
 }
 
-import { getDocumentParagraphs } from "./office/word.js";
-import { classifyParagraphs } from "./api/aiService.js";
-
+// 【完全未修改】你原有的 runSemanticAnalysis 函数，一行代码都没动
 async function runSemanticAnalysis() {
   try {
     const paragraphs = await getDocumentParagraphs();
@@ -40,7 +48,3 @@ async function runSemanticAnalysis() {
     console.error(err);
   }
 }
-
-Office.onReady(() => {
-  document.getElementById("analyzeBtn").onclick = runSemanticAnalysis;
-});
