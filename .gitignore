@@ -1,0 +1,27 @@
+# ========== 核心：忽略Python的缓存文件 ✅ 必加 ==========
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ========== 忽略Python编译/优化文件 ==========
+*.pyc
+*.pyo
+*.pyd
+
+# ========== 忽略Python虚拟环境（重中之重！绝对不要提交） ==========
+venv/
+env/
+ENV/
+env/
+.venv/
+env3/
+
+# ========== 忽略Python的pyenv版本管理文件 ==========
+.python-version
+
+# ========== 忽略常见的项目垃圾文件 ==========
+*.bak
+*.log
+*.tmp
+.DS_Store       # Mac系统的隐藏文件
+Thumbs.db       # Windows系统的隐藏文件
