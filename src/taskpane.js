@@ -21,7 +21,7 @@ async function onParseRule() {
 
   if (!ruleText) {
     console.log('111')
-    alert("请输入排版要求");
+    console.log("请输入排版要求");
     return;
   }
 
@@ -30,8 +30,9 @@ async function onParseRule() {
     document.getElementById("output").textContent =
       JSON.stringify(result, null, 2);
   } catch (err) {
-    console.error(err);
-    alert("解析失败，请查看控制台");
+    
+    console.log("解析失败，请查看控制台");
+    console.log(err);
   }
 }
 
@@ -45,6 +46,6 @@ async function runSemanticAnalysis() {
     console.log("AI 语义标注结果：", semanticResult);
 
   } catch (err) {
-    console.error(err);
+    console.log(err);
   }
 }
