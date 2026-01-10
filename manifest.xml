@@ -20,7 +20,7 @@
 
   <!-- 任务窗格入口 -->
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://你的-HTTPS-域名/taskpane.html"/>
+    <SourceLocation DefaultValue="https://word-auto-format.pages.dev/taskpane.html"/>
   </DefaultSettings>
 
   <!-- 权限 -->

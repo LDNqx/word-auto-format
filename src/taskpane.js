@@ -24,3 +24,23 @@ async function onParseRule() {
     alert("解析失败，请查看控制台");
   }
 }
+
+import { getDocumentParagraphs } from "./office/word.js";
+import { classifyParagraphs } from "./api/aiService.js";
+
+async function runSemanticAnalysis() {
+  try {
+    const paragraphs = await getDocumentParagraphs();
+    console.log("读取到段落：", paragraphs);
+
+    const semanticResult = await classifyParagraphs(paragraphs);
+    console.log("AI 语义标注结果：", semanticResult);
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+Office.onReady(() => {
+  document.getElementById("analyzeBtn").onclick = runSemanticAnalysis;
+});
