@@ -1,51 +1,146 @@
-// 【仅修复1】所有import置顶 (ES6语法规范，原代码分散import是语法隐患，必须修正，无业务改动)
-import { parseStyleRule } from "./api/aiService.js";
+import { parseStyleRule, classifyParagraphs, applyStyleToDocument } from "./api/aiService.js";
 import { getDocumentParagraphs } from "./office/word.js";
-import { classifyParagraphs } from "./api/aiService.js";
+import { applyStylesToDocument, clearAllFormatting } from "./office/applyStyle.js";
 
-// 【核心修复】合并原代码两处重复的 Office.onReady，只执行一次初始化（原重复调用是报错诱因之一）
-// 修复为 Word Online 兼容的 标准写法，不改变你任何事件绑定逻辑、函数调用逻辑
 Office.onReady(async (info) => {
-  // 关键校验：确认当前是Word环境，杜绝Word is not defined 核心报错
   if (info.host === Office.HostType.Word) {
-    // 原代码逻辑1：给 parseRule 按钮绑定点击事件 (保留你原有的 addEventListener 写法)
+    // 绑定按钮事件
     document.getElementById("parseRule").addEventListener("click", onParseRule);
-    // 原代码逻辑2：给 analyzeBtn 按钮绑定点击事件 (保留你原有的 onclick 赋值写法)
-    document.getElementById("analyzeBtn").onclick = runSemanticAnalysis;
+    document.getElementById("analyzeBtn").addEventListener("click", runSemanticAnalysis);
+    document.getElementById("applyBtn").addEventListener("click", applyFormatting);
+    document.getElementById("clearBtn").addEventListener("click", clearFormatting);
+    
+    console.log("✅ Word 加载项初始化完成");
   }
 });
 
-// 【完全未修改】你原有的 onParseRule 函数，一行代码都没动
+/**
+ * 解析排版规则（测试用）
+ */
 async function onParseRule() {
   const ruleText = document.getElementById("ruleInput").value.trim();
 
   if (!ruleText) {
-    console.log('111')
-    console.log("请输入排版要求");
+    showMessage("请输入排版要求", "error");
     return;
   }
 
   try {
+    showMessage("正在解析排版规则...", "info");
     const result = await parseStyleRule(ruleText);
-    document.getElementById("output").textContent =
-      JSON.stringify(result, null, 2);
-  } catch (err) {
     
-    console.log("解析失败，请查看控制台");
-    console.log(err);
+    document.getElementById("output").textContent = JSON.stringify(result, null, 2);
+    showMessage("解析成功！", "success");
+  } catch (err) {
+    showMessage("解析失败: " + err.message, "error");
+    console.error(err);
   }
 }
 
-// 【完全未修改】你原有的 runSemanticAnalysis 函数，一行代码都没动
+/**
+ * 执行语义分析（测试用）
+ */
 async function runSemanticAnalysis() {
   try {
+    showMessage("正在读取文档段落...", "info");
     const paragraphs = await getDocumentParagraphs();
     console.log("读取到段落：", paragraphs);
 
+    showMessage(`正在分析 ${paragraphs.length} 个段落...`, "info");
     const semanticResult = await classifyParagraphs(paragraphs);
     console.log("AI 语义标注结果：", semanticResult);
-
+    
+    document.getElementById("output").textContent = 
+      JSON.stringify(semanticResult, null, 2);
+    showMessage("语义分析完成！", "success");
   } catch (err) {
-    console.log(err);
+    showMessage("分析失败: " + err.message, "error");
+    console.error(err);
+  }
+}
+
+/**
+ * 应用格式（核心功能）
+ */
+async function applyFormatting() {
+  const ruleText = document.getElementById("ruleInput").value.trim();
+
+  if (!ruleText) {
+    showMessage("请先输入排版要求", "error");
+    return;
+  }
+
+  try {
+    // 步骤1: 读取文档段落
+    showMessage("📖 正在读取文档...", "info");
+    const paragraphs = await getDocumentParagraphs();
+    console.log(`读取到 ${paragraphs.length} 个段落`);
+    
+    if (paragraphs.length === 0) {
+      showMessage("文档中没有段落", "error");
+      return;
+    }
+
+    // 步骤2: 调用后端完整流程
+    showMessage(`🤖 正在分析和处理 ${paragraphs.length} 个段落...`, "info");
+    const result = await applyStyleToDocument(paragraphs, ruleText);
+    
+    console.log("后端返回结果：", result);
+
+    // 步骤3: 应用样式到Word文档
+    showMessage("🎨 正在应用样式到文档...", "info");
+    const applyResult = await applyStylesToDocument(result.paragraphs);
+    
+    // 显示结果
+    const stats = result.statistics;
+    const message = `
+✅ 排版完成！
+━━━━━━━━━━━━━━━━
+📊 统计信息：
+   • 总段落数: ${stats.total}
+   • 已应用样式: ${stats.styled}
+   • 未应用样式: ${stats.unstyled}
+━━━━━━━━━━━━━━━━
+    `.trim();
+    
+    document.getElementById("output").textContent = message;
+    showMessage("排版成功！", "success");
+    
+  } catch (err) {
+    showMessage("排版失败: " + err.message, "error");
+    console.error("详细错误:", err);
+  }
+}
+
+/**
+ * 清除所有格式
+ */
+async function clearFormatting() {
+  if (!confirm("确定要清除文档中的所有格式吗？此操作不可撤销。")) {
+    return;
+  }
+
+  try {
+    showMessage("正在清除格式...", "info");
+    await clearAllFormatting();
+    showMessage("格式已清除", "success");
+  } catch (err) {
+    showMessage("清除失败: " + err.message, "error");
+    console.error(err);
+  }
+}
+
+/**
+ * 显示消息提示
+ */
+function showMessage(text, type = "info") {
+  console.log(`[${type.toUpperCase()}] ${text}`);
+  
+  // 可选：在界面上显示消息
+  const outputEl = document.getElementById("output");
+  if (outputEl) {
+    const timestamp = new Date().toLocaleTimeString();
+    const prefix = type === "error" ? "❌" : type === "success" ? "✅" : "ℹ️";
+    outputEl.textContent = `${prefix} [${timestamp}] ${text}`;
   }
 }

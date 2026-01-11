@@ -3,25 +3,192 @@
 <head>
   <meta charset="utf-8" />
   <title>Word 自动排版</title>
+  <style>
+    body {
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+      padding: 20px;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    
+    h2 {
+      color: #2c3e50;
+      margin-top: 0;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    
+    .section {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #34495e;
+    }
+    
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+    }
+    
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    #applyBtn {
+      background: #27ae60;
+      color: white;
+      grid-column: 1 / -1;
+      font-size: 16px;
+    }
+    
+    #applyBtn:hover {
+      background: #229954;
+    }
+    
+    #parseRule {
+      background: #3498db;
+      color: white;
+    }
+    
+    #parseRule:hover {
+      background: #2980b9;
+    }
+    
+    #analyzeBtn {
+      background: #9b59b6;
+      color: white;
+    }
+    
+    #analyzeBtn:hover {
+      background: #8e44ad;
+    }
+    
+    #clearBtn {
+      background: #e74c3c;
+      color: white;
+      grid-column: 1 / -1;
+    }
+    
+    #clearBtn:hover {
+      background: #c0392b;
+    }
+    
+    #output {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: "Consolas", "Monaco", monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    
+    .example {
+      background: #ecf0f1;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-top: 5px;
+    }
+  </style>
 </head>
 <body>
-  <h3>排版要求</h3>
+  <h2>📝 Word 自动排版工具</h2>
+  
+  <div class="section">
+    <label for="ruleInput">排版要求</label>
+    <textarea
+      id="ruleInput"
+      rows="8"
+      placeholder="请输入排版要求，例如：
 
-  <textarea
-    id="ruleInput"
-    rows="6"
-    style="width:100%;"
-    placeholder="例如：一级标题三号黑体居中，二级标题三号楷体，正文四号宋体首行缩进两字符">
-  </textarea>
+一级标题：三号黑体居中加粗
+二级标题：四号楷体加粗
+三级标题：小四号宋体加粗
+正文：小四号宋体，首行缩进2字符
+参考文献标题：四号黑体居中
+参考文献条目：五号宋体"
+    ></textarea>
+    
+    <div class="example">
+      💡 提示：请详细描述各部分的样式要求，包括字体、字号、对齐方式等
+    </div>
+  </div>
 
-  <button id="parseRule">
-    解析排版规则
-  </button>
-  <button id="analyzeBtn">
-    执行语义分析
-  </button>
+  <div class="section">
+    <label>操作</label>
+    
+    <div class="button-group">
+      <button id="parseRule">
+        🔍 测试解析规则
+      </button>
+      
+      <button id="analyzeBtn">
+        🤖 测试语义分析
+      </button>
+      
+      <button id="applyBtn">
+        ✨ 应用排版
+      </button>
+      
+      <button id="clearBtn">
+        🗑️ 清除格式
+      </button>
+    </div>
+  </div>
 
-  <pre id="output"></pre>
+  <div class="section">
+    <label>输出</label>
+    <pre id="output">等待操作...</pre>
+  </div>
+
   <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <script type="module" src="taskpane.js"></script>
 </body>
