@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from style.parser import parse_style_rule
 from fastapi.middleware.cors import CORSMiddleware
+from semantic.classifier import classify_paragraphs
 
 app = FastAPI()
 
