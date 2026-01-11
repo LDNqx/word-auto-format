@@ -1,5 +1,5 @@
 export async function parseStyleRule(ruleText) {
-    const res = await fetch("http://127.0.0.1:8000/parse-style", {
+    const res = await fetch("http://192.168.1.6:8000/parse-style", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -17,7 +17,7 @@ export async function parseStyleRule(ruleText) {
   }
   
   export async function classifyParagraphs(paragraphs) {
-    const res = await fetch("http://127.0.0.1:8000/classify", {
+    const res = await fetch("http://192.168.1.6:8000/classify", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
