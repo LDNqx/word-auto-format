@@ -8,7 +8,18 @@ Office.onReady(async (info) => {
     document.getElementById("parseRule").addEventListener("click", onParseRule);
     document.getElementById("analyzeBtn").addEventListener("click", runSemanticAnalysis);
     document.getElementById("applyBtn").addEventListener("click", applyFormatting);
-    document.getElementById("clearBtn").addEventListener("click", clearFormatting);
+    document.getElementById("clearBtn").addEventListener("click", showClearConfirm);
+    
+    // 绑定模态框按钮
+    document.getElementById("cancelBtn").addEventListener("click", hideClearConfirm);
+    document.getElementById("confirmBtn").addEventListener("click", confirmClearFormatting);
+    
+    // 点击模态框外部关闭
+    document.getElementById("confirmModal").addEventListener("click", (e) => {
+      if (e.target.id === "confirmModal") {
+        hideClearConfirm();
+      }
+    });
     
     console.log("✅ Word 加载项初始化完成");
   }
@@ -18,7 +29,10 @@ Office.onReady(async (info) => {
  * 解析排版规则（测试用）
  */
 async function onParseRule() {
+  console.log("🔵 onParseRule 函数被调用");
+  
   const ruleText = document.getElementById("ruleInput").value.trim();
+  console.log("📝 规则文本:", ruleText);
 
   if (!ruleText) {
     showMessage("请输入排版要求", "error");
@@ -27,7 +41,9 @@ async function onParseRule() {
 
   try {
     showMessage("正在解析排版规则...", "info");
+    console.log("📡 准备调用 parseStyleRule...");
     const result = await parseStyleRule(ruleText);
+    console.log("✅ 后端返回:", result);
     
     document.getElementById("output").textContent = JSON.stringify(result, null, 2);
     showMessage("解析成功！", "success");
@@ -41,14 +57,18 @@ async function onParseRule() {
  * 执行语义分析（测试用）
  */
 async function runSemanticAnalysis() {
+  console.log("🔵 runSemanticAnalysis 函数被调用");
+  
   try {
     showMessage("正在读取文档段落...", "info");
+    console.log("📖 准备读取段落...");
     const paragraphs = await getDocumentParagraphs();
-    console.log("读取到段落：", paragraphs);
+    console.log("✅ 读取到段落：", paragraphs);
 
     showMessage(`正在分析 ${paragraphs.length} 个段落...`, "info");
+    console.log("📡 准备调用 classifyParagraphs...");
     const semanticResult = await classifyParagraphs(paragraphs);
-    console.log("AI 语义标注结果：", semanticResult);
+    console.log("✅ AI 语义标注结果：", semanticResult);
     
     document.getElementById("output").textContent = 
       JSON.stringify(semanticResult, null, 2);
@@ -113,13 +133,25 @@ async function applyFormatting() {
 }
 
 /**
- * 清除所有格式
+ * 显示清除格式确认对话框
  */
-async function clearFormatting() {
-  if (!confirm("确定要清除文档中的所有格式吗？此操作不可撤销。")) {
-    return;
-  }
+function showClearConfirm() {
+  document.getElementById("confirmModal").style.display = "block";
+}
 
+/**
+ * 隐藏清除格式确认对话框
+ */
+function hideClearConfirm() {
+  document.getElementById("confirmModal").style.display = "none";
+}
+
+/**
+ * 确认清除所有格式
+ */
+async function confirmClearFormatting() {
+  hideClearConfirm();
+  
   try {
     showMessage("正在清除格式...", "info");
     await clearAllFormatting();
